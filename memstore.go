@@ -3,6 +3,7 @@ package gotools
 import (
     "sync"
     "time"
+    "runtime"
 )
 
 type item struct {
@@ -39,4 +40,17 @@ func (s *MemStore) Get(key string) interface{} {
         delete(s.store, key)
     }
     return nil
+}
+
+// ClearMemory libera a memória alocada pelo programa para o garbage collector
+func (s *MemStore)  ClearMemory() {
+    // Chama a função GC() do pacote runtime para forçar a execução do garbage collector
+    runtime.GC()
+
+    // Aloca um slice vazio de bytes para forçar a liberação de qualquer memória não utilizada
+    var dummySlice []byte
+    for i := 0; i < 10; i++ {
+        dummySlice = append(dummySlice, make([]byte, 1000000)...)
+    }
+    dummySlice = nil
 }
