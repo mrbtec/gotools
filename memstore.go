@@ -54,3 +54,30 @@ func (s *MemStore)  ClearMemory() {
     }
     dummySlice = nil
 }
+
+// SetMemoryLimit define um limite máximo para a quantidade de memória que o programa pode alocar.
+func (s *MemStore) SetMemoryLimit(limit uint64) {
+    memLimit := &limit
+    if *memLimit > 0 {
+        runtime.MemProfileRate = 0
+        go func() {
+            for {
+                var memStats runtime.MemStats
+                runtime.ReadMemStats(&memStats)
+               	if memStats.Alloc > *memLimit {
+                    runtime.GC()
+                }
+                time.Sleep(time.Second)
+            }
+        }()
+    }
+}
+
+// GetMemoryUsage retorna a quantidade de memória atualmente em uso pelo programa em bytes.
+func (s *MemStore) GetMemoryUsage() uint64 {
+    var memStats runtime.MemStats
+    runtime.ReadMemStats(&memStats)
+    return memStats.Alloc
+}
+
+
