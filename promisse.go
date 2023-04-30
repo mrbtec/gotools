@@ -1,4 +1,4 @@
-package promise
+package gotools
 
 type Result interface{}
 type Promise struct {
